@@ -1,8 +1,11 @@
-import { createRoot } from "react-dom/client";
-import SearchParams from "./SearchParams";
-import { BrowserRouter, Link, Route, Routes } from "react-router-dom";
-import Details from "./Details";
+import { Link, Route, Routes } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { Suspense, lazy, useState } from "react";
+import './style.css'
+import AdoptedPetContext from "./AdoptedPetContext";
+
+const Details = lazy(() => import("./Details"))
+const SearchParams = lazy(() => import("./SearchParams"))
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -14,20 +17,28 @@ const queryClient = new QueryClient({
 });
 
 const App = () => {
+  const adoptedPet = useState(null)
   return (
-    <BrowserRouter>
-      <QueryClientProvider client={queryClient}>
-        <header>
-          <Link to="/">Adopt Me!</Link>
-        </header>
-        <Routes>
-          <Route path="/details/:id" element={<Details />} />
-          <Route path="/" element={<SearchParams />} />
-        </Routes>
-      </QueryClientProvider>
-    </BrowserRouter>
+    <div className="p-0 m-0" style={{ background: "url(http://pets-images.dev-apis.com/pets/wallpaperA.jpg)", }}>
+      <AdoptedPetContext.Provider value={adoptedPet} >
+        <QueryClientProvider client={queryClient}>
+          <Suspense fallback={
+            <div>
+              <h2> Loading ... </h2>
+            </div>
+          }>
+            <header className="w-full mb-10 bg-gradient-to-b from-yellow-400 via-orange-500 to-red-500 p-7 text-center">
+              <Link className="text-white text-5xl hover:text-gray-300" to="/">Adopt Me!</Link>
+            </header>
+            <Routes>
+              <Route path="/details/:id" element={<Details />} />
+              <Route path="/" element={<SearchParams />} />
+            </Routes>
+          </Suspense>
+        </QueryClientProvider>
+      </AdoptedPetContext.Provider>
+    </div>
   );
 };
-const container = document.getElementById("root");
-const root = createRoot(container);
-root.render(<App />);
+
+export default App
