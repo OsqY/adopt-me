@@ -3,6 +3,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Suspense, lazy, useState } from "react";
 import './style.css'
 import AdoptedPetContext from "./AdoptedPetContext";
+import { IPet } from "./APIResponsesTypes";
 
 const Details = lazy(() => import("./Details"))
 const SearchParams = lazy(() => import("./SearchParams"))
@@ -17,7 +18,7 @@ const queryClient = new QueryClient({
 });
 
 const App = () => {
-  const adoptedPet = useState(null)
+  const adoptedPet = useState(null as IPet | null)
   return (
     <div className="p-0 m-0" style={{ background: "url(http://pets-images.dev-apis.com/pets/wallpaperA.jpg)", }}>
       <AdoptedPetContext.Provider value={adoptedPet} >

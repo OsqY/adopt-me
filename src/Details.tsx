@@ -1,17 +1,23 @@
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate, useParams } from "react-router-dom";
-import fetchPet from "./fetchPet";
 import Carousel from "./Carousel";
 import ErrorBoundary from "./ErrorBoundary";
 import Modal from "./Modal";
 import { useState, useContext } from "react";
 import AdoptedPetContext from "./AdoptedPetContext";
+import { PetAPIResponse } from "./APIResponsesTypes";
+import fetchPet from "./fetchPet";
 
 const Details = () => {
   const { id } = useParams();
+
+  if (!id) {
+    throw new Error("no id here blud")
+  }
+
   const [showModal, setShowModal] = useState(false)
   const navigate = useNavigate()
-  const results = useQuery({
+  const results = useQuery<PetAPIResponse>({
     queryKey: ["details", id],
     queryFn: fetchPet,
   });
@@ -25,7 +31,11 @@ const Details = () => {
     );
   }
 
-  const pet = results.data.pets[0];
+  const pet = results?.data?.pets[0];
+
+  if (!pet) {
+    throw new Error("no pet buddy")
+  }
 
   return (
     <div className="w-11/12 pb-3 bg-sky-500 mx-auto my-4 rounded-lg">
@@ -56,10 +66,10 @@ const Details = () => {
   );
 };
 
-function DetailsErrorBoundary(props) {
+function DetailsErrorBoundary() {
   return (
     <ErrorBoundary>
-      <Details {...props} />
+      <Details />
     </ErrorBoundary>
   );
 }
